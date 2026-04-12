@@ -16,8 +16,8 @@ class Settings:
 
 
     #database settings 
-    DATABASE_URL:str = 'postgresql://postgres:password@localhost:5432/trello_tasks'
-
+    # DATABASE_URL:str = 'postgresql://postgres:password@localhost:5432/trello_tasks'
+    DATABASE_URL:str ='sqlite:///./test.db'
 
 def get_settings()->Settings:
     return(Settings(
