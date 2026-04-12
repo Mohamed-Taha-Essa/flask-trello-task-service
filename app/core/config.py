@@ -33,7 +33,7 @@ def get_settings()->Settings:
 
 
             #database settings 
-            DATABASE_URL  = os.getenv( "DATABASE_URL", 'postgresql://postgres:password@localhost:5432/trello_tasks'
+            DATABASE_URL  = os.getenv( "DATABASE_URL", 'sqlite:///./test.db'
         ), 
     ))
     
