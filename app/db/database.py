@@ -1,7 +1,10 @@
 from app.core.config import settings
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy  import create_engine ,text 
-from sqlalchemy.orm import Session ,Sessionmaker
-from app.models.tasks import Base
+from sqlalchemy.orm import sessionmaker
+from contextlib import contextmanager
+# Define Base here to avoid circular imports
+Base = declarative_base()
 
 #create database engine 
 
@@ -13,9 +16,9 @@ engine = create_engine(
 
 #create session factory (that create db session)
 
-SessionLocal = Sessionmaker(
+SessionLocal = sessionmaker(
 
-    bing=engine , 
+    bind=engine , 
     autoflush =False,
     autocommit=False
 )
@@ -26,7 +29,20 @@ def create_table():
 #using in each endpoint for create db session
 def get_db():
     db =SessionLocal()#factory pattern create instance from class so using ()
-    try:        # i have connection bool (set of db connection each connection uder  without colse that is not return to pool)
+    try:        # i have connection bool (set of db connection each connection under  without close that is not return to pool)
         yield db  # to give me one session (db connection)for each request and wait until query is end
     finally: # to close connection after query 
-        db.cose()
+        db.close()
+
+@contextmanager
+def get_db_session():
+    db = SessionLocal()
+    try:
+        yield db
+        db.commit()
+
+    except Exception as e:
+        db.rollback()
+        raise e
+    finally:
+        db.close()
