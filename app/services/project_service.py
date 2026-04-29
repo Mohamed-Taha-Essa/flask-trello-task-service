@@ -6,7 +6,7 @@ this file will contain all the business logic for projects
 
 from app.db.database import get_db_session
 from app.schemas.project_schemas import ProjectCreate, ProjectResponse, ProjectUpdate
-from app.models.project_model import Project
+from app.models.projects import Project
 from typing import List ,Optional
 
 
