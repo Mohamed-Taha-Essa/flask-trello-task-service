@@ -4,6 +4,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, func  
 from sqlalchemy.sql import func
 from app.db.database import Base
+from sqlalchemy.orm import relationship
 
 class Project(Base):
     __tablename__ = "projects"
@@ -19,3 +20,5 @@ class Project(Base):
     created_at = Column(DateTime(timezone=True),server_default=func.now())
     updated_at = Column(DateTime(timezone=True),onupdate=func.now())
 
+# relationship with boards
+    boards = relationship("Board", back_populates="project", cascade="all, delete-orphan")
