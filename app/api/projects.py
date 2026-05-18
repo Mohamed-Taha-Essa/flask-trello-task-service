@@ -8,8 +8,8 @@ from typing import List ,Optional
 projects_bp = Blueprint('projects' ,__name__, prefix="api.v1/projects" ,tags=["projects"] )
 
 
-@projects_bp.get("/", methods=['GET'])
-def read_projects_by_owner() -> List[ProjectResponse]:
+@projects_bp.route("/", methods=['GET'])
+def read_projects_by_owner():
 
     """return all projects by owner id """
     owner_id = request.args.get("owner_id")
@@ -25,28 +25,41 @@ def read_projects_by_owner() -> List[ProjectResponse]:
         "data": [p.model_dump() for p in projects]
     }), 200
 
-@projects_bp.get("/<int:project_id>",methods=['GET'])
-def read_project(project_id: int) -> Optional[ProjectResponse]:
+@projects_bp.route("/<int:project_id>",methods=['GET'])
+def project_detail(project_id: int):
 
     """return project detail"""
     project = get_project_by_id(project_id)
     if not project:
         return jsonify({"error": "Project not found"}), 404
-    return jsonify(project)  
+    return jsonify(project.model_dump()) ,200  
 
-@projects_bp.post("/", methods=['POST'])
-def create_new_project(project_data: ProjectCreate) -> ProjectResponse:
+@projects_bp.route("/", methods=['POST'])
+def create_new_project() :
+    try :
+        data = request.get_json()
+        if not data : 
+            return jsonify({"error" : "no data provided"}), 404
+        
+        project_data = ProjectCreate(**data)
+        created_project = create_project(project_data)
+        return jsonify(created_project.model_dump()) ,201
+
+    except Exception as e : 
+        return jsonify({"error ":f"failed to delete board :{e}"}) , 500
+
+
     project = create_project(project_data)
     return jsonify(project)
 
-@projects_bp.put("/{project_id}", response_model=ProjectResponse)
-def update_existing_project(project_id: int, project_data: ProjectUpdate) -> Optional[ProjectResponse]:
+@projects_bp.route("/<int:project_id >", methods=["PUT"])
+def update_existing_project(project_id: int, project_data: ProjectUpdate):
     project = update_project(project_id, project_data)
     if not project:
         return jsonify( {"error": "project not foune"}), 404
     return project
 
-@projects_bp.delete("/{project_id}", response_model=bool)
+@projects_bp.route("/<int:project_id>",methods=["DELETE"])
 def delete_existing_project(project_id: int) -> bool:
     success = delete_project(project_id)
     if not success:
