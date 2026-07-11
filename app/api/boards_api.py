@@ -1,6 +1,6 @@
 """ this file for handeling api for board model"""
-from app.schemas.board_schema import BoardCreate ,BoardUpdate,BoardResponse 
-from app.services.board_service import create_board ,update_board,delete_board,get_board_by_id,get_boards_by_project
+from app.schemas.boards_schema import BoardCreate ,BoardUpdate,BoardResponse 
+from app.services.boards_service import create_board ,update_board,delete_board,get_board_by_id,get_boards_by_project
 from app.models.boards import Board
 from flask import Blueprint ,jsonify ,request
 from typing import List ,Optional

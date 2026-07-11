@@ -1,7 +1,7 @@
 """ this file for handeling api for project model"""
 
 from app.services.project_service import get_project_by_id ,get_projects_by_owner ,create_project ,update_project ,delete_project
-from app.schemas.project_schemas import ProjectCreate ,ProjectResponse ,ProjectUpdate
+from app.schemas.projects_schemas import ProjectCreate ,ProjectResponse ,ProjectUpdate
 from flask import Blueprint ,jsonify ,request
 from typing import List ,Optional
 

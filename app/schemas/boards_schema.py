@@ -1,7 +1,7 @@
 """
     project schemas using pydantic
 """
-from app.schemas.project_schemas import ProjectBase
+from app.schemas.projects_schemas import ProjectBase
 from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import Optional , List

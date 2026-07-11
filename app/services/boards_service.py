@@ -1,12 +1,12 @@
 
 from app.db.database import get_db_session
 from app.models import boards
-from app.schemas.project_schemas import ProjectCreate, ProjectResponse, ProjectUpdate
+from app.schemas.projects_schemas import ProjectCreate, ProjectResponse, ProjectUpdate
 from app.models.projects import Project
 from typing import List ,Optional
 
 from app.models.boards import Board
-from app.schemas.board_schema import BoardCreate, BoardResponse, BoardUpdate
+from app.schemas.boards_schema import BoardCreate, BoardResponse, BoardUpdate
 
 
 def get_boards_by_project(project_id: int ,offset:int =0 ,limit:int=50)-> List[BoardResponse]:
