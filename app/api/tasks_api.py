@@ -2,7 +2,7 @@
 
 from app.services.tasks_service import (
     get_task_by_id,
-    get_tasks_by_board,
+    get_tasks_list,
     create_task,
     update_task,
     delete_task,
@@ -15,16 +15,28 @@ task_bp = Blueprint('tasks', __name__, prefix="api.v1/tasks", tags=["tasks"])
 
 
 @task_bp.route("/", methods=['GET'])
-def tasks_list_by_board():
+def tasks_list():
     try:
         board_id = request.args.get("board_id", type=int)
+        user_id = request.args.get("user_id", type=int)
+        assigned_to = request.args.get("assigned_to", type=int)
+        status_str = request.args.get("status", type=str)
+        priority_str = request.args.get("priority", type=str)
         limit = request.args.get('limit', default=50, type=int)
         offset = request.args.get('offset', default=0, type=int)
 
         if not board_id:
             return jsonify({"error": "board_id param is required"}), 400
-
-        tasks = get_tasks_by_board(board_id=board_id, offset=offset, limit=limit)
+        
+        status = None
+        if status_str:
+            status = status_str
+        
+        priority = None
+        if priority_str:
+            priority = priority_str
+        
+        tasks = get_tasks_list(board_id=board_id, user_id=user_id, assigned_to=assigned_to, status=status, priority=priority , offset=offset, limit=limit)
         tasks_data = [task.model_dump() for task in tasks]
         return jsonify(tasks_data), 200
 
@@ -101,3 +113,13 @@ def task_statistics():
 
     except Exception as e:
         return jsonify({"error": f"failed to get task stats: {e}"}), 500
+
+@task_bp.route("/user/<int:user_id>", methods=["GET"])
+def get_tasks_for_user(user_id:int , status: str = None):
+    try:
+        tasks = get_tasks_by_user(user_id=user_id, status=status)
+        tasks_data = [task.model_dump() for task in tasks]
+        return jsonify(tasks_data), 200
+
+    except Exception as e:
+        return jsonify({"error": f"failed to fetch tasks: {e}"}), 500

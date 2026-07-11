@@ -9,14 +9,32 @@ from app.models.tasks import Task
 from typing import List, Optional
 
 
-def get_tasks_by_board(board_id: int, offset: int = 0, limit: int = 50) -> List[TaskResponse]:
+def get_tasks_list(board_id: int, user_id: Optional[int] = None, assigned_to: Optional[int] = None, offset: int = 0, limit: int = 50, status: Optional[str] = None, priority: Optional[str] = None) -> List[TaskResponse]:
     """
     Get all tasks for a specific board
     """
     with get_db_session() as db:
-        tasks = db.query(Task).filter(Task.board_id == board_id).offset(offset).limit(limit).all()
+        query = db.query(Task).filter(Task.board_id == board_id)
+        
+        if status:
+            query = query.filter(Task.status == status)
+        
+        if priority:
+            query = query.filter(Task.priority == priority)
+        
+        tasks = query.offset(offset).limit(limit).all()
         return [TaskResponse.model_validate(task) for task in tasks]
 
+
+def get_tasks_by_user(user_id: int ,status: Optional[str] = None) -> List[TaskResponse]:
+    """
+    Get all tasks for a specific user
+    """
+    with get_db_session() as db:
+        query = db.query(Task).filter(Task.user_id == user_id).order_by(Task.created_at.desc()).all()
+        if status:
+            query = query.filter(Task.status == status).all()
+        return [TaskResponse.model_validate(task) for task in query]
 
 def get_task_by_id(task_id: int) -> Optional[TaskResponse]:
     """
